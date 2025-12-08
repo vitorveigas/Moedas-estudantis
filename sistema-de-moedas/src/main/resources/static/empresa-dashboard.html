@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Empresa - Sistema de Vantagens</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-blue: #4e73df;
+            --secondary-gray: #858796;
+            --light-gray: #f8f9fc;
+            --white: #ffffff;
+            --dark-blue: #2e4ab1;
+            --border-color: #e3e6f0;
+            --text-dark: #5a5c69;
+            --text-light: #b7b9cc;
+            --success: #1cc88a;
+            --danger: #e74a3b;
+        }
+
+        body { font-family: Quantico, 'Roboto Condensed', sans-serif ; }
+
+        #wrapper { display: flex; }
+        #content-wrapper { display: flex; flex-direction: column; width: 100%; }
+        #content { flex: 1 0 auto; }
+
+        /* Sidebar */
+        .sidebar { width: 224px; min-height: 100vh; background: linear-gradient(180deg, var(--primary-blue) 10%, var(--dark-blue) 100%); }
+        .sidebar-brand { height: 4.375rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: var(--white); text-decoration: none; }
+        .sidebar .nav-link { display: block; padding: 1rem; color: var(--text-light); text-decoration: none; cursor: pointer; }
+        .sidebar .nav-link i { margin-right: 0.5rem; }
+        .sidebar .nav-item.active .nav-link { color: var(--white); background-color: rgba(255,255,255,0.1); }
+        .sidebar .nav-item:hover .nav-link { color: var(--white); }
+        .sidebar .sidebar-divider { margin: 0 1rem 1rem; border-top: 1px solid rgba(255,255,255,0.15); }
+
+        /* Topbar */
+        .topbar { height: 4.375rem; margin-bottom: 1.5rem; background-color: var(--white); box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; }
+        .logout-btn { background: var(--danger); color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .logout-btn:hover { background: #c73e30; }
+
+        /* Tabs */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Cards */
+        .card-summary { border-left-width: 0.25rem; }
+        .border-left-primary { border-left-color: var(--primary-blue) !important; }
+        .border-left-success { border-left-color: var(--success) !important; }
+        .text-primary { color: var(--primary-blue) !important; }
+        .text-success { color: var(--success) !important; }
+        .text-gray-800 { color: #5a5c69 !important; }
+
+        /* Form */
+        .input-container { position: relative; margin-bottom: 1rem; }
+        .input-container i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999; }
+        input.form-control, select.form-select, textarea.form-control { padding-left: 45px; }
+        input.form-control:focus, select.form-select:focus, textarea.form-control:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 0.25rem rgba(78,115,223,0.25); }
+
+        /* Lista de vantagens */
+        #listaVantagens .result-item { border: 1px solid var(--border-color); padding: 0.75rem; border-radius: 0.35rem; margin-bottom: 0.5rem; background: #fafafa; }
+        #listaVantagens .result-item strong { color: var(--primary-blue); display: block; margin-bottom: 0.25rem; }
+        #listaVantagens .result-item .detalhes { font-style: italic; color: var(--text-dark); }
+    </style>
+</head>
+<body>
+
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul class="navbar-nav sidebar">
+        <a class="sidebar-brand" href="#"><i class="fas fa-building me-2"></i>Empresa</a>
+        <hr class="sidebar-divider my-0">
+        <li class="nav-item active"><a class="nav-link" onclick="showTab('dashboard', this)"><i class="fas fa-tachometer-alt"></i>Dashboard</a></li>
+        <hr class="sidebar-divider">
+        <li class="nav-item"><a class="nav-link" onclick="showTab('cadastrar', this)"><i class="fas fa-plus-circle"></i>Cadastrar Vantagem</a></li>
+        <li class="nav-item"><a class="nav-link" onclick="showTab('listar', this)"><i class="fas fa-list"></i>Listar Vantagens</a></li>
+        <li class="nav-item"><a class="nav-link" onclick="showTab('conta', this)"><i class="fas fa-user"></i>Minha Conta</a></li>
+    </ul>
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+
+            <!-- Topbar -->
+            <div class="topbar">
+                <h1 class="h3 text-gray-800">Dashboard da Empresa</h1>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Sair</button>
+            </div>
+
+            <div class="container-fluid pt-4">
+
+                <!-- Dashboard -->
+                <div id="dashboard" class="tab-content active">
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card card-summary border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Vantagens Cadastradas</div>
+                                            <div id="totalVantagens" class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                        </div>
+                                        <div class="col-auto"><i class="fas fa-gift fa-2x text-gray-300"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card card-summary border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Funcionários Premiados</div>
+                                            <div id="totalFuncionarios" class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                        </div>
+                                        <div class="col-auto"><i class="fas fa-user-tie fa-2x text-gray-300"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cadastrar Vantagem -->
+                <div id="cadastrar" class="tab-content">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3"><h2><i class="fas fa-plus-circle"></i> Cadastrar Vantagem</h2></div>
+                        <div class="card-body">
+                            <form id="cadastrarVantagemForm">
+                                <div class="input-container"><i class="fas fa-gift"></i>
+                                    <input type="text" id="nomeVantagem" class="form-control" placeholder="Nome da Vantagem" required>
+                                </div>
+                                <div class="input-container"><i class="fas fa-comment-alt"></i>
+                                    <textarea id="descricaoVantagem" class="form-control" placeholder="Descrição" required></textarea>
+                                </div>
+                
+                                <div class="input-container"><i class="fas fa-dollar-sign"></i>
+                                    <input type="number" id="valorVantagem" class="form-control" placeholder="Valor (opcional)">
+                                </div>
+
+                                <div class="input-container">
+                                    <i class="fas fa-image"></i>
+                                    <input type="text" id="imagemVantagem" class="form-control" placeholder="URL da imagem (https://...)" required>
+                                </div>
+
+
+                                <button type="submit" class="btn btn-success w-100"><i class="fas fa-paper-plane"></i> Cadastrar</button>
+                                <div id="cadastrarMessage" class="mt-3 fw-bold"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Listar Vantagens -->
+                <div id="listar" class="tab-content">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3"><h2><i class="fas fa-list"></i> Vantagens Cadastradas</h2></div>
+                        <div class="card-body" id="listaVantagens">
+                            <p>Nenhuma vantagem cadastrada.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Minha Conta -->
+                <div id="conta" class="tab-content">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3"><h2><i class="fas fa-user"></i> Minha Conta</h2></div>
+                        <div class="card-body">
+                            <form id="accountForm">
+                                <div class="input-container"><i class="fas fa-building"></i>
+                                    <input type="text" id="nomeEmpresa" class="form-control" placeholder="Nome da Empresa" required>
+                                </div>
+                                <div class="input-container"><i class="fas fa-envelope"></i>
+                                    <input type="email" id="emailEmpresa" class="form-control" placeholder="Email" required>
+                                </div>
+                                <div class="input-container"><i class="fas fa-id-badge"></i>
+                                    <input type="text" id="cnpjEmpresa" class="form-control" placeholder="CNPJ" readonly>
+                                </div>
+                                <div class="input-container"><i class="fas fa-map-marker-alt"></i>
+                                    <input type="text" id="enderecoEmpresa" class="form-control" placeholder="Endereço">
+                                </div>
+                                <div class="input-container"><i class="fas fa-lock"></i>
+                                    <input type="password" id="senhaEmpresa" class="form-control" placeholder="Nova Senha">
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Atualizar</button>
+                                <div id="accountMessage" class="mt-3 fw-bold"></div>
+                                <hr>
+                                <button type="button" class="btn btn-danger w-100" id="deleteAccountBtn"><i class="fas fa-trash"></i> Excluir Conta</button>
+                                <div id="deleteMessage" class="mt-3 fw-bold"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // TAB NAVIGATION
+    function showTab(tabName, element) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
+        document.querySelectorAll('.sidebar .nav-item').forEach(t => t.classList.remove('active'));
+        if (element) element.closest('li.nav-item').classList.add('active');
+    }
+
+    // LOGOUT
+    function logout() {
+        alert('Você saiu do sistema!');
+        // aqui redireciona para login real se existir
+    }
+
+    // LOCAL STORAGE SIMULADO
+    let vantagens = JSON.parse(localStorage.getItem('vantagens')) || [];
+    let empresa = JSON.parse(localStorage.getItem('empresa')) || {nome:'Minha Empresa', email:'empresa@teste.com', cnpj:'00.000.000/0001-00', endereco:''};
+
+    // CARREGAR DASHBOARD
+    function atualizarDashboard() {
+        document.getElementById('totalVantagens').innerText = vantagens.length;
+        document.getElementById('totalFuncionarios').innerText = Math.floor(Math.random()*50); // simula número de premiados
+    }
+
+    // LISTAR VANTAGENS
+    function listarVantagens() {
+        const lista = document.getElementById('listaVantagens');
+        if(vantagens.length === 0) { lista.innerHTML = '<p>Nenhuma vantagem cadastrada.</p>'; return; }
+        lista.innerHTML = '';
+        vantagens.forEach((v, i) => {
+            const div = document.createElement('div');
+            div.className = 'result-item';
+            div.innerHTML = `<strong>${v.nome}</strong>
+                             <span class="detalhes">${v.descricao}</span>
+                             <span>Valor: ${v.valor ? 'R$ '+v.valor : 'Não informado'}</span>`;
+            lista.appendChild(div);
+        });
+    }
+
+    // CADASTRAR VANTAGEM
+    document.getElementById('cadastrarVantagemForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const nome = document.getElementById('nomeVantagem').value;
+    const descricao = document.getElementById('descricaoVantagem').value;
+    const valor = document.getElementById('valorVantagem').value;
+    const imagemUrl = document.getElementById('imagemVantagem').value;
+
+    if (!imagemUrl || !imagemUrl.startsWith("http")) {
+        document.getElementById('cadastrarMessage').innerText = "Insira uma URL válida!";
+        return;
+    }
+
+    const vantagemJson = {
+        empresaId: 1, // <-- colocar ID real da empresa logada
+        titulo: nome,
+        descricao: descricao,
+        custoMoedas: valor ? Number(valor) : 0,
+        img: imagemUrl   // 🔥 agora envia direto a URL da imagem
+    };
+
+    try {
+        const response = await fetch("http://localhost:8080/vantagens/criar-com-url", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(vantagemJson)
+        });
+
+        if (!response.ok) {
+            document.getElementById('cadastrarMessage').innerText = "Erro ao cadastrar vantagem.";
+            return;
+        }
+
+        const data = await response.json();
+
+        document.getElementById('cadastrarMessage').innerText = "Vantagem cadastrada com sucesso!";
+        this.reset();
+
+    } catch (err) {
+        document.getElementById('cadastrarMessage').innerText = "Erro ao conectar com servidor.";
+        console.error(err);
+    }
+});
+
+
+    // CARREGAR CONTA
+    function carregarConta() {
+        document.getElementById('nomeEmpresa').value = empresa.nome;
+        document.getElementById('emailEmpresa').value = empresa.email;
+        document.getElementById('cnpjEmpresa').value = empresa.cnpj;
+        document.getElementById('enderecoEmpresa').value = empresa.endereco;
+    }
+
+    // ATUALIZAR CONTA
+    document.getElementById('accountForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        empresa.nome = document.getElementById('nomeEmpresa').value;
+        empresa.email = document.getElementById('emailEmpresa').value;
+        empresa.endereco = document.getElementById('enderecoEmpresa').value;
+        localStorage.setItem('empresa', JSON.stringify(empresa));
+        document.getElementById('accountMessage').innerText = 'Dados atualizados com sucesso!';
+    });
+
+    // EXCLUIR CONTA
+    document.getElementById('deleteAccountBtn').addEventListener('click', function(){
+        if(confirm('Tem certeza que deseja excluir a conta?')) {
+            localStorage.clear();
+            document.getElementById('deleteMessage').innerText = 'Conta excluída!';
+            alert('Conta excluída! Reinicie a página.');
+        }
+    });
+
+    // INIT
+    atualizarDashboard();
+    listarVantagens();
+    carregarConta();
+</script>
+</body>
+</html>

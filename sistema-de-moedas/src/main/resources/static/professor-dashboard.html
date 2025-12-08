@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Professor - Sistema de Moedas Estudantis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        /* Estilos Globais (Tema SB Admin 2) */
+        :root {
+            --primary-blue: #4e73df;
+            --secondary-gray: #858796;
+            --light-gray: #f8f9fc;
+            --white: #ffffff;
+            --dark-blue: #2e4ab1;
+            --border-color: #e3e6f0;
+            --text-dark: #5a5c69;
+            --text-light: #b7b9cc;
+            --success: #1cc88a;
+            --danger: #e74a3b;
+            --warning: #f6c23e;
+        }
+
+        body {
+            font-family: Quantico, 'Roboto Condensed', sans-serif ;
+            background-color: var(--light-gray);
+        }
+
+        /* Estrutura Principal */
+        #wrapper {
+            display: flex;
+        }
+
+        #content-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        #content {
+            flex: 1 0 auto;
+        }
+
+        /* 1. Sidebar (Menu Lateral) */
+        .sidebar {
+            width: 224px;
+            min-height: 100vh;
+            background-image: linear-gradient(180deg, var(--primary-blue) 10%, var(--dark-blue) 100%);
+            transition: all 0.3s ease;
+        }
+        .sidebar-brand {
+            height: 4.375rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--white);
+            text-decoration: none;
+        }
+        .sidebar .nav-item {
+            position: relative;
+        }
+        .sidebar .nav-link {
+            display: block;
+            padding: 1rem;
+            color: var(--text-light);
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .sidebar .nav-link i {
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            color: var(--text-light);
+        }
+        .sidebar .nav-link span {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .sidebar .nav-item.active .nav-link {
+            color: var(--white);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar .nav-item:hover .nav-link {
+            color: var(--white);
+        }
+        .sidebar .sidebar-divider {
+            margin: 0 1rem 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* 2. Topbar (Barra Superior) */
+        .topbar {
+            height: 4.375rem;
+            margin-bottom: 1.5rem;
+            background-color: var(--white);
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        .topbar h1 {
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-left: 1.5rem;
+        }
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        .logout-btn:hover {
+            background: #c73e30;
+        }
+
+        /* 3. Conteúdo da Página */
+        .container-fluid {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+        
+        /* Oculta abas inativas */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: 0.35rem;
+        }
+        .card.shadow {
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+        }
+        .card-header {
+            padding: 0.75rem 1.25rem;
+            background-color: #f8f9fc;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .card-header h2 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+
+        /* Card de Resumo (Stats) */
+        .card-summary {
+            border-left-width: 0.25rem;
+        }
+        .border-left-primary { border-left-color: var(--primary-blue) !important; }
+        .border-left-success { border-left-color: var(--success) !important; }
+        .text-primary { color: var(--primary-blue) !important; }
+        .text-success { color: var(--success) !important; }
+        .text-gray-300 { color: #dddfeb !important; }
+        .text-gray-800 { color: #5a5c69 !important; }
+        .text-xs { font-size: 0.7rem; }
+
+        /* Estilos do Formulário */
+        .form-group {
+             margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        .input-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        .input-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            z-index: 3;
+        }
+        input.form-control, select.form-select, textarea.form-control {
+            padding-left: 45px;
+        }
+        input.form-control:focus, select.form-select:focus, textarea.form-control:focus {
+             border-color: var(--primary-blue);
+             box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+
+        /* Botões */
+        .btn-primary {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+        .btn-primary:hover {
+            background-color: var(--dark-blue);
+            border-color: var(--dark-blue);
+        }
+
+        /* Histórico */
+        #historicoEnvios .result-item {
+             border: 1px solid var(--border-color);
+             padding: 0.75rem;
+             border-radius: 0.35rem;
+             margin-bottom: 0.5rem;
+             background: #fafafa;
+        }
+        #historicoEnvios .result-item strong {
+            color: var(--primary-blue);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        #historicoEnvios .result-item .aluno-info {
+            font-style: italic;
+            color: var(--text-dark);
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="wrapper">
+
+    <ul class="navbar-nav sidebar">
+        <a class="sidebar-brand" href="#">
+            <i class="fas fa-chalkboard-teacher me-2"></i>
+            <span>Professor</span>
+        </a>
+
+        <hr class="sidebar-divider my-0">
+
+        <li class="nav-item active">
+            <a class="nav-link" onclick="showTab('darMoedas', this)">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+
+        <hr class="sidebar-divider">
+
+        <li class="nav-item">
+            <a class="nav-link" onclick="showTab('historico', this)">
+                <i class="fas fa-fw fa-history"></i>
+                <span>Histórico de Envios</span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" onclick="showTab('conta', this)">
+                <i class="fas fa-fw fa-user"></i>
+                <span>Minha Conta</span>
+            </a>
+        </li>
+    </ul>
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+
+            <nav class="navbar navbar-expand navbar-light bg-white topbar static-top shadow">
+                <h1 class="h3 mb-0 text-gray-800">Dashboard do Professor</h1>
+
+                <ul class="navbar-nav ms-auto me-3">
+                    <li class="nav-item">
+                        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2"></i>Sair</button>
+                    </li>
+                </ul>
+            </nav>
+            <div class="container-fluid pt-4">
+                
+                <div id="messageContainer" class="mb-4"></div>
+
+                <div id="darMoedas" class="tab-content active">
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card card-summary border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Saldo Atual</div>
+                                            <div id="moedasDistribuidas" class="h5 mb-0 font-weight-bold text-gray-800">0 moedas</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-coins fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card card-summary border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Alunos Premiados (Total)</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h2><i class="fas fa-plus-circle"></i> Distribuir Moedas para Aluno</h2>
+                                </div>
+                                <div class="card-body">
+                                        <form id="darMoedasForm">
+                                            <div class="form-group">
+                                                <label for="alunoId">ID do Aluno</label>
+                                                <div class="input-container">
+                                                    <i class="fas fa-id-card"></i>
+                                                    <input type="number" id="alunoId" class="form-control" placeholder="Digite o ID do aluno" min="1" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="quantidadeMoedas">Quantidade de Moedas</label>
+                                                <div class="input-container">
+                                                    <i class="fas fa-coins"></i>
+                                                    <input type="number" id="quantidadeMoedas" class="form-control" placeholder="0" min="1" required>
+                                                </div>
+                                            </div>
+                                             <div class="form-group">
+                                                <label for="motivoMoedas">Motivo / Descrição</label>
+                                                <div class="input-container">
+                                                    <i class="fas fa-comment-alt"></i>
+                                                    <input type="text" id="motivoMoedas" class="form-control" placeholder="Ex: Ótimo desempenho na prova" required>
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-success btn-lg w-100">
+                                                <i class="fas fa-paper-plane"></i> Enviar Moedas
+                                            </button>
+                                        </form>
+                                    <div id="darMoedasMessage" class="mt-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="historico" class="tab-content">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h2><i class="fas fa-history"></i> Histórico de Envios</h2>
+                        </div>
+                        <div class="card-body">
+                            <div id="historicoEnvios">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="conta" class="tab-content">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h2><i class="fas fa-user"></i> Minha Conta</h2>
+                                </div>
+                                <div class="card-body">
+                                    <form id="accountForm">
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                <label for="name">Nome</label>
+                                                <div class="input-container">
+                                                    <i class="fas fa-user"></i>
+                                                    <input type="text" id="name" class="form-control" placeholder="Nome" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label for="email">Email</label>
+                                                <div class="input-container">
+                                                    <i class="fas fa-envelope"></i>
+                                                    <input type="email" id="email" class="form-control" placeholder="Email" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                <label for="cpf">CPF (Não pode ser alterado)</label>
+                                                <div class="input-container">
+                                                    <i class="fas fa-id-badge"></i>
+                                                    <input type="text" id="cpf" class="form-control" placeholder="CPF" required readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label for="rg">RG (Não pode ser alterado)</label>
+                                                <div class="input-container">
+                                                    <i class="fas fa-id-badge"></i>
+                                                    <input type="text" id="rg" class="form-control" placeholder="RG" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="departamento">Departamento ou Matéria</label>
+                                            <div class="input-container">
+                                                <i class="fas fa-chalkboard"></i>
+                                                <input type="text" id="departamento" class="form-control" placeholder="Ex: Departamento de Matemática">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="instituicao">Instituição de Ensino</label>
+                                            <div class="input-container">
+                                                <i class="fas fa-university"></i>
+                                                <input type="text" id="instituicao" class="form-control" placeholder="Instituição de Ensino">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="endereco">Endereço</label>
+                                            <div class="input-container">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                <input type="text" id="endereco" class="form-control" placeholder="Endereço">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                             <label for="password">Nova Senha</label>
+                                            <div class="input-container">
+                                                <i class="fas fa-lock"></i>
+                                                <input type="password" id="password" class="form-control" placeholder="Nova senha (deixe em branco para não alterar)">
+                                            </div>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-primary">Atualizar</button>
+                                        <div id="accountMessage" class="mt-3" style="font-weight: 600;"></div>
+                                        
+                                        <hr>
+
+                                        <button type="button" class="btn btn-danger" id="deleteAccountBtn">
+                                            <i class="fas fa-trash"></i> Excluir Conta
+                                        </button>
+                                        <div id="deleteMessage" class="mt-3" style="font-weight: 600;"></div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            </div>
+        </div>
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- EmailJS Library -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script>
+    // EmailJS Configuration
+    const EMAILJS_CONFIG = {
+        serviceId: 'service_neysrwd',
+        templateId: 'template_3866ojo',
+        publicKey: 'VenmFULOKS8wQ433g'
+    };
+    
+    // Inicializar EmailJS
+    (function() {
+        emailjs.init(EMAILJS_CONFIG.publicKey);
+    })();
+
+    const API_BASE = 'http://localhost:8080';
+    const token = localStorage.getItem('token');
+
+    if (!token) window.location.href = 'login.html';
+    
+    // Função para enviar email via EmailJS
+    async function enviarEmailMoedasRecebidas(alunoEmail, alunoNome, professorNome, quantidade, mensagem) {
+        try {
+            if (!alunoEmail || alunoEmail.trim() === '') {
+                console.warn('Email do aluno não disponível. Não foi possível enviar email.');
+                return;
+            }
+
+            const templateParams = {
+                to_email: alunoEmail,
+                to_name: alunoNome || 'Aluno',
+                professor_name: professorNome || 'Professor',
+                quantidade: quantidade,
+                mensagem: mensagem || 'Parabéns pelo bom desempenho!'
+            };
+
+            await emailjs.send(
+                EMAILJS_CONFIG.serviceId,
+                EMAILJS_CONFIG.templateId,
+                templateParams
+            );
+            
+            console.log('Email enviado com sucesso para:', alunoEmail);
+        } catch (error) {
+            console.error('Erro ao enviar email via EmailJS:', error);
+            // Não interrompe o fluxo se o email falhar
+        }
+    }
+
+    function setAuthHeaders() {
+        return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+    }
+
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userType');
+        window.location.href = 'login.html';
+    }
+
+    // FUNÇÃO showTab ATUALIZADA para funcionar com o menu
+    function showTab(tabName, element) {
+        // Esconde todos os conteúdos
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        // Mostra o conteúdo da aba clicada
+        document.getElementById(tabName).classList.add('active');
+
+        // Remove a classe 'active' de todos os itens do menu
+        document.querySelectorAll('.sidebar .nav-item').forEach(t => t.classList.remove('active'));
+        // Adiciona a classe 'active' ao item de menu (li) que foi clicado
+        if (element) {
+            element.closest('li.nav-item').classList.add('active');
+        }
+        
+        // Limpa mensagens ao trocar de aba
+         document.getElementById('darMoedasMessage').innerHTML = '';
+         document.getElementById('accountMessage').innerHTML = '';
+         document.getElementById('deleteMessage').innerHTML = '';
+    }
+
+    // Função para exibir mensagens de feedback (Bootstrap alerts)
+    function showMessage(msg, type='success', containerId = 'darMoedasMessage') {
+        const msgDiv = document.getElementById(containerId);
+        if (!msgDiv) return;
+        
+        const alertType = (type === 'success') ? 'alert-success' : 'alert-danger';
+        const alertHTML = `
+            <div class="alert ${alertType} alert-dismissible fade show" role="alert">
+                ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        msgDiv.innerHTML = alertHTML;
+        
+        // Remove a mensagem após 5 segundos
+        setTimeout(() => {
+            const alert = msgDiv.querySelector('.alert');
+            if(alert) {
+                const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+                if (bsAlert) bsAlert.close();
+            }
+        }, 5000);
+    }
+    
+    // Funções específicas para mensagens da conta
+    function showAccountMessage(msg, type='success') {
+        const msgDiv = document.getElementById('accountMessage');
+        msgDiv.textContent = msg;
+        msgDiv.style.color = (type === 'success') ? 'green' : 'red';
+    }
+    
+    function showDeleteMessage(msg, type='success') {
+        const msgDiv = document.getElementById('deleteMessage');
+        msgDiv.textContent = msg;
+        msgDiv.style.color = (type === 'success') ? 'green' : 'red';
+    }
+
+    // Obtém o perfil do professor (espera objeto com id)
+    async function getProfessorProfile() {
+        const res = await fetch(`${API_BASE}/professores/perfil`, { headers: setAuthHeaders() });
+        if (!res.ok) throw new Error('Não foi possível obter perfil do professor');
+        return res.json();
+    }
+
+    // Carregar saldo do professor (usa /transacoes/professor/{id}/saldo)
+    async function carregarSaldoProfessor() {
+        try {
+            const perfil = await getProfessorProfile();
+            if (!perfil || !perfil.id) {
+                document.getElementById('moedasDistribuidas').textContent = 'Perfil não encontrado';
+                return;
+            }
+            const res = await fetch(`${API_BASE}/transacoes/professor/${perfil.id}/saldo`, { headers: setAuthHeaders() });
+            if (res.ok) {
+                const pb = await res.json();
+                const saldo = pb?.balance ?? pb?.saldo ?? 0;
+                document.getElementById('moedasDistribuidas').textContent = `${saldo} moedas`;
+            } else {
+                document.getElementById('moedasDistribuidas').textContent = 'Erro ao buscar saldo';
+            }
+        } catch (err) {
+            console.error(err);
+            document.getElementById('moedasDistribuidas').textContent = 'Erro!';
+        }
+    }
+
+    // Tenta buscar aluno por matrícula via endpoint backend
+    async function buscarAlunoPorMatricula(matricula) {
+        const res = await fetch(`${API_BASE}/alunos/buscarPorMatricula?matricula=${encodeURIComponent(matricula)}`, { headers: setAuthHeaders() });
+        if (!res.ok) {
+            let body = '';
+            try { body = await res.text(); } catch (e) {}
+            console.error('buscarPorMatricula failed', { status: res.status, body });
+            if (res.status === 401 || res.status === 403) {
+                // token inválido/expirado
+                localStorage.removeItem('token');
+                window.location.href = 'login.html';
+                throw new Error('Não autenticado');
+            }
+            throw new Error('Aluno não encontrado');
+        }
+        return res.json();
+    }
+
+    // Carregar histórico de envios - tenta endpoint próprio, se não existir apenas limpa
+    async function carregarHistoricoEnvios() {
+        try {
+            const perfil = await getProfessorProfile();
+            if (!perfil?.id) return;
+            const res = await fetch(`${API_BASE}/professores/historico?professorId=${perfil.id}`, { headers: setAuthHeaders() });
+            if (!res.ok) {
+                // backend pode não ter endpoint; apenas limpa UI
+                document.getElementById('historicoEnvios').innerHTML = '<p>Nenhum histórico disponível.</p>';
+                return;
+            }
+            const data = await res.json();
+            const div = document.getElementById('historicoEnvios');
+            div.innerHTML = '';
+            if (!data || data.length === 0) {
+                div.innerHTML = '<p>Nenhum envio de moedas encontrado.</p>';
+                return;
+            }
+            data.forEach(t => {
+                const item = document.createElement('div');
+                item.className = 'result-item';
+                const dataFormatada = t.criadoEm ? new Date(t.criadoEm).toLocaleString('pt-BR') : 'Data indisponível';
+                item.innerHTML = `
+                    <strong>${t.mensagem || 'Motivo não informado'}</strong>
+                    <span>Enviado em: ${dataFormatada}</span>
+                    <span class="aluno-info">Para: ${t.aluno?.nome || t.alunoNome || 'Aluno'} (Matrícula: ${t.aluno?.matricula || t.alunoMatricula || 'N/A'})</span>
+                    <h5 class="mt-2 mb-0 text-success">+ ${t.quantidade} moedas</h5>
+                `;
+                div.appendChild(item);
+            });
+        } catch (error) {
+            console.error(error);
+            document.getElementById('historicoEnvios').innerHTML = '<p class="text-danger">Erro ao carregar histórico.</p>';
+        }
+    }
+
+    // Listener para o formulário de DAR MOEDAS (usa /transacoes/enviar)
+    document.getElementById('darMoedasForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const alunoId = parseInt(document.getElementById('alunoId').value, 10);
+        const quantidade = parseInt(document.getElementById('quantidadeMoedas').value, 10);
+        const descricao = document.getElementById('motivoMoedas').value.trim();
+
+        if (!alunoId || !quantidade || !descricao) {
+            return showMessage('Preencha todos os campos.', 'error', 'darMoedasMessage');
+        }
+
+        if (quantidade <= 0) {
+            return showMessage('A quantidade deve ser maior que zero.', 'error', 'darMoedasMessage');
+        }
+
+        try {
+            const perfil = await getProfessorProfile();
+            if (!perfil?.id) throw new Error('Perfil do professor não encontrado');
+
+            const res = await fetch(`${API_BASE}/transacoes/enviar`, {
+                method: 'POST',
+                headers: setAuthHeaders(),
+                body: JSON.stringify({
+                    professorId: perfil.id,
+                    alunoId: alunoId,
+                    quantidade: quantidade,
+                    mensagem: descricao
+                })
+            });
+
+            if (res.ok) {
+                const transacao = await res.json();
+                showMessage('Moedas enviadas com sucesso!', 'success', 'darMoedasMessage');
+                document.getElementById('darMoedasForm').reset();
+                carregarHistoricoEnvios();
+                carregarSaldoProfessor();
+                
+                // Enviar email para o aluno via EmailJS
+                if (transacao?.aluno) {
+                    enviarEmailMoedasRecebidas(
+                        transacao.aluno.email,
+                        transacao.aluno.nome,
+                        transacao.professor?.nome || 'Professor',
+                        transacao.quantidade,
+                        transacao.mensagem
+                    );
+                }
+            } else {
+                const data = await res.json().catch(() => ({}));
+                showMessage(data?.message || 'Erro ao enviar moedas. Verifique o ID do aluno.', 'error', 'darMoedasMessage');
+            }
+        } catch (error) {
+            console.error(error);
+            showMessage(error.message || 'Erro de conexão.', 'error', 'darMoedasMessage');
+        }
+    });
+
+    // Excluir conta do professor (mantido)
+    document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
+        const cpf = document.getElementById('cpf').value;
+
+        if (!cpf) {
+            showDeleteMessage('CPF não encontrado. Não foi possível excluir a conta.', 'error');
+            return;
+        }
+
+        if (!confirm('Tem certeza que deseja excluir permanentemente sua conta? Esta ação não poderá ser desfeita.')) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/professores/deletarPorCpf?cpf=${cpf}`, {
+                method: 'DELETE',
+                headers: setAuthHeaders()
+            });
+
+            if (res.ok) {
+                showDeleteMessage('Conta excluída com sucesso! Redirecionando...', 'success');
+                localStorage.removeItem('token');
+                setTimeout(() => window.location.href = 'login.html', 3000);
+            } else {
+                 const data = await res.json();
+                showDeleteMessage(data.error || 'Erro ao excluir conta.', 'error');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            showDeleteMessage('Erro de conexão ao excluir conta.', 'error');
+        }
+    });
+
+    // Inicialização (carrega tudo ao abrir a página)
+    document.addEventListener('DOMContentLoaded', () => {
+        carregarHistoricoEnvios();
+        carregarPerfil();
+        carregarSaldoProfessor();
+        // Você pode adicionar uma função para carregar os resumos do dashboard aqui
+    });
+
+    // garante carregamento do perfil quando usado em outras funções
+    async function carregarPerfil() {
+        try {
+            const perfil = await getProfessorProfile();
+            if (perfil) {
+                document.getElementById('name').value = perfil.nome || '';
+                document.getElementById('email').value = perfil.email || '';
+                document.getElementById('cpf').value = perfil.cpf || '';
+                document.getElementById('rg').value = perfil.rg || '';
+                document.getElementById('departamento').value = perfil.departamento || '';
+                document.getElementById('instituicao').value = perfil.instituicaoEnsino || '';
+                document.getElementById('endereco').value = perfil.endereco || '';
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+</script>
+</body>
+</html>
