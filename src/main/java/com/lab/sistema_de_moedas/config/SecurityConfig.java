@@ -16,7 +16,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -38,49 +37,31 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                
+                // 🔓 Arquivos estáticos e páginas públicas
+                .requestMatchers(
+                        "/", 
+                        "/index.html",
+                        "/login.html",
+                        "/aluno-dashboard.html",
+                        "/empresa-dashboard.html",
+                        "/professor-dashboard.html",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**"
+                ).permitAll()
 
-    // 🔓 Libera todas as páginas HTML públicas do front-end
-    .requestMatchers(
-        "/",                     // raiz
-        "/index.html",
-        "/login.html",
-        "/aluno-dashboard.html",
-        "/empresa-dashboard.html",
-        "/professor-dashboard.html",
-        "/static/**",
-        "/css/**",
-        "/js/**",
-        "/images/**",
-        "/**/*.html",
-        "/**/*.css",
-        "/**/*.js",
-        "/**/*.png",
-        "/**/*.jpg",
-        "/**/*.jpeg",
-        "/**/*.svg"
-    ).permitAll()
+                // 🔓 Endpoints públicos
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/alunos/criarAluno", "/alunos/perfil", "/alunos/buscarPorMatricula", "/alunos/historico").permitAll()
+                .requestMatchers("/professores/criarProfessor", "/professores/perfil").permitAll()
+                .requestMatchers("/empresas/criar").permitAll()
+                .requestMatchers("/transacoes/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/transacoes/aluno/**").permitAll()
+                .requestMatchers("/vantagens/**", "/vantagens/listar", "/vantagens/criar-com-imagem", "/vantagens/criar-com-url").permitAll()
 
-    // Endpoints públicos
-    .requestMatchers("/auth/**").permitAll()
-    .requestMatchers("/alunos/criarAluno").permitAll()
-    .requestMatchers("/alunos/perfil").permitAll()
-    .requestMatchers("/alunos/buscarPorMatricula").permitAll()
-    .requestMatchers("/professores/criarProfessor").permitAll()
-    .requestMatchers("/professores/perfil").permitAll()
-    .requestMatchers("/empresas/criar").permitAll()
-    .requestMatchers("/transacoes/**").permitAll()
-    .requestMatchers(HttpMethod.GET, "/transacoes/aluno/**").permitAll()
-    .requestMatchers("/vantagens/**").permitAll()
-    .requestMatchers("/vantagens/listar").permitAll()
-    .requestMatchers("/vantagens/criar-com-imagem").permitAll()
-    .requestMatchers("/vantagens/criar-com-url").permitAll()
-    .requestMatchers("/alunos/historico").permitAll()
-
-    // Todo o resto precisa de autenticação
-    .anyRequest().authenticated()
-)
-
+                // 🔒 Todo o resto precisa de autenticação
+                .anyRequest().authenticated()
+            )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -89,28 +70,19 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        // 🔹 Permite suas origens de front-end
+
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5500",
-                "http://127.0.0.1:5500"
+                "http://127.0.0.1:5500",
+                "https://moedas-estudantis.onrender.com"
         ));
-        
-        // 🔹 Métodos HTTP liberados, incluindo OPTIONS para preflight
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        
-        // 🔹 Permite todos os headers, incluindo Authorization
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
-        
-        // 🔹 Permite cookies se necessário
         configuration.setAllowCredentials(true);
 
-        // 🔹 Configura URLs
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }
-    
-
 }
