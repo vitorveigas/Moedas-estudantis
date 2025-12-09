@@ -38,6 +38,15 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/", 
+                    "/index.html", 
+                    "/static/**", 
+                    "/images/**", 
+                    "/css/**", 
+                    "/js/**"
+            ).permitAll()
+
                 // Endpoints públicos
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/alunos/criarAluno").permitAll()
