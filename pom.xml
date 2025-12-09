@@ -53,12 +53,13 @@
         </dependency>
 
         <!-- Lombok -->
-        <dependency>
+         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
-            <optional>true</optional>
+            <scope>provided</scope>
         </dependency>
+
 
         <!-- JWT -->
         <dependency>
