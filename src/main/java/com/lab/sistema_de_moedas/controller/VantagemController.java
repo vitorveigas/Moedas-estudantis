@@ -179,12 +179,22 @@ public ResponseEntity<?> trocarVantagem(
 }
 
 
-    @Data
-    public static class VantagemRequest {
-        private Long empresaId;
-        private String titulo;
-        private String descricao;
-        private int custoMoedas;
-        private String img;
-    }
+   public class VantagemRequest {
+    private Long empresaId;
+    private String titulo;
+    private String descricao;
+    private Integer custoMoedas;
+    private String img;
+
+    public Long getEmpresaId() { return empresaId; }
+    public void setEmpresaId(Long empresaId) { this.empresaId = empresaId; }
+    public String getTitulo() { return titulo; }
+    public void setTitulo(String titulo) { this.titulo = titulo; }
+    public String getDescricao() { return descricao; }
+    public void setDescricao(String descricao) { this.descricao = descricao; }
+    public Integer getCustoMoedas() { return custoMoedas; }
+    public void setCustoMoedas(Integer custoMoedas) { this.custoMoedas = custoMoedas; }
+    public String getImg() { return img; }
+    public void setImg(String img) { this.img = img; }
+}
 }

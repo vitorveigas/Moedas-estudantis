@@ -56,11 +56,20 @@ public class TransacaoController {
     }
     
 
-    @Data
-    public static class TransferRequest {
-        private Long professorId;
-        private Long alunoId;
-        private Long quantidade;
-        private String mensagem;
-    }
+   
+    public class TransferRequest {
+    private Long professorId;
+    private Long alunoId;
+    private Long quantidade;
+    private String mensagem;
+
+    public Long getProfessorId() { return professorId; }
+    public void setProfessorId(Long professorId) { this.professorId = professorId; }
+    public Long getAlunoId() { return alunoId; }
+    public void setAlunoId(Long alunoId) { this.alunoId = alunoId; }
+    public Long getQuantidade() { return quantidade; }
+    public void setQuantidade(Long quantidade) { this.quantidade = quantidade; }
+    public String getMensagem() { return mensagem; }
+    public void setMensagem(String mensagem) { this.mensagem = mensagem; }
+}
 }
