@@ -38,35 +38,49 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/", 
-                    "/index.html", 
-                    "/static/**", 
-                    "/images/**", 
-                    "/css/**", 
-                    "/js/**"
-            ).permitAll()
+                
 
-                // Endpoints públicos
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/alunos/criarAluno").permitAll()
-                .requestMatchers("/alunos/perfil").permitAll()
-                .requestMatchers("/alunos/buscarPorMatricula").permitAll()
-                .requestMatchers("/professores/criarProfessor").permitAll()
-                .requestMatchers("/professores/perfil").permitAll()
-                .requestMatchers("/empresas/criar").permitAll()
-                // Endpoints de transações
-                .requestMatchers("/transacoes/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/transacoes/aluno/**").permitAll()
-                .requestMatchers("/vantagens/**").permitAll()
-                .requestMatchers("/vantagens/listar").permitAll()
-                .requestMatchers("/vantagens/criar-com-imagem").permitAll()
-                .requestMatchers("/vantagens/criar-com-url").permitAll()
+    // 🔓 Libera todas as páginas HTML públicas do front-end
+    .requestMatchers(
+        "/",                     // raiz
+        "/index.html",
+        "/login.html",
+        "/aluno-dashboard.html",
+        "/empresa-dashboard.html",
+        "/professor-dashboard.html",
+        "/static/**",
+        "/css/**",
+        "/js/**",
+        "/images/**",
+        "/**/*.html",
+        "/**/*.css",
+        "/**/*.js",
+        "/**/*.png",
+        "/**/*.jpg",
+        "/**/*.jpeg",
+        "/**/*.svg"
+    ).permitAll()
 
-                .requestMatchers("/alunos/historico").permitAll()
-                // Tudo o resto exige autenticação
-                .anyRequest().authenticated()
-            )
+    // Endpoints públicos
+    .requestMatchers("/auth/**").permitAll()
+    .requestMatchers("/alunos/criarAluno").permitAll()
+    .requestMatchers("/alunos/perfil").permitAll()
+    .requestMatchers("/alunos/buscarPorMatricula").permitAll()
+    .requestMatchers("/professores/criarProfessor").permitAll()
+    .requestMatchers("/professores/perfil").permitAll()
+    .requestMatchers("/empresas/criar").permitAll()
+    .requestMatchers("/transacoes/**").permitAll()
+    .requestMatchers(HttpMethod.GET, "/transacoes/aluno/**").permitAll()
+    .requestMatchers("/vantagens/**").permitAll()
+    .requestMatchers("/vantagens/listar").permitAll()
+    .requestMatchers("/vantagens/criar-com-imagem").permitAll()
+    .requestMatchers("/vantagens/criar-com-url").permitAll()
+    .requestMatchers("/alunos/historico").permitAll()
+
+    // Todo o resto precisa de autenticação
+    .anyRequest().authenticated()
+)
+
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
