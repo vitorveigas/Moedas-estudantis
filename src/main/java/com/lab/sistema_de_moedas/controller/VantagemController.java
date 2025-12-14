@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/vantagens")
-public static class VantagemController {
+public class VantagemController {
 
     private final VantagemService vantagemService;
     private final JwtService jwtService;
@@ -179,7 +179,7 @@ public ResponseEntity<?> trocarVantagem(
 }
 
 
-   public class VantagemRequest {
+   public static class VantagemRequest {
     private Long empresaId;
     private String titulo;
     private String descricao;
