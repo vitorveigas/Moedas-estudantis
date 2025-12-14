@@ -57,7 +57,7 @@ public class TransacaoController {
     
 
    
-    public class static TransferRequest {
+    public static class TransferRequest {
     private Long professorId;
     private Long alunoId;
     private Long quantidade;
