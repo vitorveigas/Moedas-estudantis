@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .requestMatchers("/alunos/criarAluno", "/alunos/perfil", "/alunos/buscarPorMatricula", "/alunos/historico").permitAll()
                 .requestMatchers("/professores/criarProfessor", "/professores/perfil").permitAll()
                 .requestMatchers("/empresas/criar").permitAll()
+                .requestMatchers("/transacoes/enviar").permitAll()
                 .requestMatchers("/transacoes/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/transacoes/aluno/**").permitAll()
                 .requestMatchers("/vantagens/**", "/vantagens/listar", "/vantagens/criar-com-imagem", "/vantagens/criar-com-url").permitAll()
