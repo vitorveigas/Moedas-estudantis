@@ -39,7 +39,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // 🔓 Arquivos estáticos e páginas públicas
                 .requestMatchers(
-                        "/", 
+                        "/",
+                        "/error",
                         "/index.html",
                         "/login.html",
                         "/aluno-dashboard.html",
